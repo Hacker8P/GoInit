@@ -1,0 +1,6 @@
+{
+    "Name" : "Echo",
+    "Command" : "/usr/bin/echo Ciao",
+    "Active" : true,
+    "At" : 0
+}
