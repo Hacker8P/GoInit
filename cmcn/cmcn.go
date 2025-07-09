@@ -1,20 +1,16 @@
 package cmcn
 
 import (
-	"golang.org/x/sys/unix"
-
-	"lmd"
-
 	"os"
-
-	"strings"
-
-	"proc"
-
-	"smng"
 )
 
-func createFifoIfNotExist() {
+func Communicate(message string) {
+	r, _ := os.OpenFile("/tmp/goinit_fifo", os.O_WRONLY, os.ModeNamedPipe)
+	r.Write([]byte(message))
+	defer r.Close()
+}
+
+/* func createFifoIfNotExist() {
 	unix.Mkfifo("/tmp/goinit_fifo", 0644)
 }
 
@@ -37,13 +33,13 @@ func elaborate(msg_i string) {
 			}
 			proc.StartProcess(msg[1], msg[2], args_0, os.Stdout, os.Stderr)
 		case "reload":
-			ServiceElaborate()
+			// ServiceElaborate()
 		default:
-			lmd.LogInline(false, msg_i)
+			// lmd.LogInline(false, msg_i)
 	}
-}
+} */
 
-func wait_for_message() {
+/* func wait_for_message() {
 	for {
 		m, _ := os.OpenFile("/tmp/goinit_fifo", os.O_RDONLY, os.ModeNamedPipe)
 
@@ -55,4 +51,4 @@ func wait_for_message() {
 
 		elaborate(string(l[:c]))
 	}
-}
+} */

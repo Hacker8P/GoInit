@@ -8,8 +8,6 @@ import (
 	"strings"
 	// "time"
 
-	// "encoding/json"
-
 	"smng"
 
 	"lmd"
@@ -60,9 +58,17 @@ func elaborate(msg_i string) {
 	}
 }
 
+type JSON struct {
+	Command string
+}
+
 func wait_for_message() {
 	for {
 		m, _ := os.OpenFile("/tmp/goinit_fifo", os.O_RDONLY, os.ModeNamedPipe)
+
+		/* var json_output JSON
+
+		json.Unmarshal() */
 
 		l := make([]byte, 128)
 
@@ -101,7 +107,7 @@ func main() {
 	} */
 	// proc.StartProcess("Bash", "sleep", []string{"5"}, os.Stdout, os.Stderr)
 
-	smng.MkService("Bash", "sleep 5", true, 0).Run()
+	smng.MkService("Bash", "sleep 5", "pietro", true, 0).Run()
 
 	// communicate("Ciao")
 

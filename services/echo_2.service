@@ -2,5 +2,6 @@
     "Name" : "Echo2",
     "Command" : "/usr/bin/echo RubamiLaNonna",
     "Active" : true,
+    "User" : "pietro",
     "At" : "0"
 }
