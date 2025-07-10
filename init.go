@@ -81,11 +81,12 @@ func wait_for_message() {
 }
 
 func ServiceElaborate() {
-	ros := services.ReadService{Directory: "./"}
+	ros := services.ReadService{Directory: "/etc/goinit/"}
 	ros.ReadServices(&services_files)
 	for _, service_single := range services_files {
 		service_single.Status.Stdout = os.Stdout
 		service_single.Status.Stderr = os.Stderr
+		service_single.Status.Stdin = os.Stdin
 		service_single.Run()
 	}
 }
@@ -125,14 +126,6 @@ func main() {
 	fmt.Println(services_files_Service[0].Command) */
 
 	ServiceElaborate()
-
-	srvc := services.MkServiceFF("./services/echo.service")
-
-	srvc.Status.Stdout = os.Stdout
-
-	srvc.Status.Stderr = os.Stderr
-
-	srvc.Run()
 
 	logger.Log(false, "Example")
 
