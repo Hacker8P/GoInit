@@ -8,7 +8,7 @@ import (
 	"strings"
 	// "time"
 
-	"smng"
+	"services"
 
 	"lmd"
 
@@ -23,7 +23,7 @@ func createFifoIfNotExist() {
 	unix.Mkfifo("/tmp/goinit_fifo", 0644)
 }
 
-var services_files []smng.Service
+var services_files []services.Service
 
 var logger_file *os.File =  func() *os.File {
 	v, _ := os.OpenFile("/tmp/log/init.log", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0644)
@@ -81,7 +81,7 @@ func wait_for_message() {
 }
 
 func ServiceElaborate() {
-	ros := smng.ReadService{Directory: "./"}
+	ros := services.ReadService{Directory: "./"}
 	ros.ReadServices(&services_files)
 	for _, service_single := range services_files {
 		service_single.Status.Stdout = os.Stdout
@@ -107,12 +107,12 @@ func main() {
 	} */
 	// proc.StartProcess("Bash", "sleep", []string{"5"}, os.Stdout, os.Stderr)
 
-	smng.MkService("Bash", "sleep 5", "pietro", true, 0).Run()
+	services.MkService("Bash", "sleep 5", "pietro", true, 0).Run()
 
 	// communicate("Ciao")
 
 	/* for a, _ := range services_files {
-		x := smng.Service{a["Name"], }
+		x := services.Service{a["Name"], }
 	} */
 
 	/* if assertion, may := services_files[0].(map[string]interface{}); may {
@@ -126,7 +126,7 @@ func main() {
 
 	ServiceElaborate()
 
-	srvc := smng.MkServiceFF("./services/echo.service")
+	srvc := services.MkServiceFF("./services/echo.service")
 
 	srvc.Status.Stdout = os.Stdout
 

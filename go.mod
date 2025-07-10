@@ -6,7 +6,7 @@ require (
 	golang.org/x/sys v0.25.0
 	lmd v0.0.0-00010101000000-000000000000
 	proc v0.0.0-00010101000000-000000000000
-	smng v0.0.0-00010101000000-000000000000
+	services v0.0.0-00010101000000-000000000000
 )
 
 require (
@@ -15,7 +15,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 )
 
-replace smng => ./smng
+replace services => ./services
 
 replace lmd => ./lmd
 

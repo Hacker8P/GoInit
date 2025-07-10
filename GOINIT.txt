@@ -1,0 +1,22 @@
+GOINIT
+
+NAME
+       GoInit - system and service manager
+
+SYNOPSIS
+
+	/usr/lib/systemd/systemd [OPTIONS...]
+
+	goinit [COMMANDS]
+       
+COMMANDS
+
+	start [SERVICE]
+	
+	stop [SERVICE]
+	
+	restart [SERVICE]
+	
+	enable [SERVICE]
+	
+	disable [SERVICE]

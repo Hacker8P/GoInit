@@ -1,6 +1,0 @@
-{
-    "Name" : "Python Service",
-    "Command" : "/usr/bin/python3 -m http.server 8090",
-    "Active" : true,
-    "At" : "0"
-}
