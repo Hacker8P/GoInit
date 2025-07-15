@@ -1,6 +1,6 @@
 # GoInit
 
-**GoInit** è un semplice init system scritto in Go. Fornisce un gestore di servizi modulare, leggero e facilmente estendibile, pensato per ambienti containerizzati, sistemi embedded, o come base per init personalizzati.
+**GoInit** è un init system scritto in Go. Fornisce un gestore di servizi modulare e facilmente estendibile.
 
 ## ✨ Caratteristiche
 
@@ -15,9 +15,8 @@
 
 GoInit è composto da tre componenti principali:
 
-- **SMNG** (Service Manager): carica, attiva, disattiva e monitora i servizi.
+- **SERVICES** (Service Manager): carica, attiva, disattiva e monitora i servizi.
 - **LMD** (Log Manager Daemon): gestisce i log in formato leggibile e colorato (es. `[ ERROR ]` in rosso).
-- **CMCN** (Communication Manager - *DEPRECATO*): vecchio gestore della comunicazione, verrà sostituito da un modulo DBus o altro.
 
 ## ⚙️ Formato Servizi
 
@@ -35,7 +34,8 @@ Ogni servizio è descritto in formato JSON:
 - `Name`: nome univoco del servizio
 - `Command`: comando da eseguire
 - `Active`: se avviarlo automaticamente all'avvio
-- `At`: tempo in secondi dopo il boot per avviarlo (`0` = subito)
+- `User`: con quale utente eseguire il processo
+- `At`: quando avviarlo (`0` = All'avvio)
 
 ## 🔌 Comunicazione
 
@@ -89,9 +89,9 @@ sudo ./goinit
 ## 🤝 Contribuire
 
 Pull request, issue e suggerimenti sono benvenuti!  
-Se vuoi contribuire, apri un’[issue](https://github.com/tuo-utente/goinit/issues) o una PR.
+Se vuoi contribuire, apri un’[issue](https://github.com/Hacker8P/GoInit/issues) o una PR.
 
 ---
 
-**Licenza**: MIT  
-**Autore**: [Il tuo nome o nickname]
+**Licenza**: GPL 3.0
+**Autore**: Hacker8P
