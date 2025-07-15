@@ -7,6 +7,23 @@ import (
 	"time"
 )
 
+func (logger *Logger) ErrLog(logv error) {
+	if logv != nil {
+		log := "[ "
+		log += color.RGB(255, 0, 0).Sprint("ERROR")
+
+		log += " ] "
+		/* _, c := i.(error)
+		if c {
+			fmt.Println("NOT AN ERROR")
+			fmt.Fprintln(os.Stderr, "Failed wlogv)
+		} */
+		fmt.Fprint(logger.FileErr, log)
+
+		fmt.Fprintln(logger.FileErr, logv)
+	}
+}
+
 func (logger *Logger) Log(is_a_err bool, logv interface{}) {
 	if logv == nil {
 		return
