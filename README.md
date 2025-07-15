@@ -27,6 +27,7 @@ Ogni servizio è descritto in formato JSON:
   "Name": "Echo",
   "Command": "/usr/bin/echo Ciao",
   "Active": true,
+  "User" : "nobody",
   "At": 0
 }
 ```
