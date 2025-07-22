@@ -110,6 +110,24 @@ func main() {
 
 	services.MkService("Bash", "sleep 5", "pietro", true, 0).Run()
 
+	service := services.MkService("BashPIPE", "bash", "pietro", true, 0)
+
+	err := service.RunPTPipe()
+
+	logger.ErrLog(err)
+
+	err = service.Attach(&services.TTY{
+		Path: "/dev/pts/1",
+		File: func() *os.File {
+			file, _ := os.OpenFile("/dev/pts/1", os.O_RDWR, 0)
+			return file
+		}(),
+	})
+
+	logger.ErrLog(err)
+
+	services.GetEnv(service.User)
+
 	// communicate("Ciao")
 
 	/* for a, _ := range services_files {
@@ -126,6 +144,8 @@ func main() {
 	fmt.Println(services_files_Service[0].Command) */
 
 	ServiceElaborate()
+
+	logger.Log(false, "Example")
 
 	logger.Log(false, "Example")
 

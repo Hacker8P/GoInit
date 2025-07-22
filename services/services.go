@@ -2,15 +2,19 @@ package services
 
 import (
 	"encoding/json"
+	"errors"
+	"io"
 	"lmd"
 	"os"
 	"os/exec"
+	"os/user"
 	"proc"
+	"strconv"
 	"strings"
 	"syscall"
-	"os/user"
-	"strconv"
 	"time"
+	"github.com/creack/pty"
+	"golang.org/x/term"
 )
 
 /* func AssertServices(services *[]map[string]interface{}) {
@@ -87,6 +91,16 @@ func (ros *ReadService) ReadServices(services *[]Service) {
 			*services = append(*services, *service)
 		}
 	}
+}
+
+func (service *Service) RunPTPipe() error {
+	pipe, err := pty.Start(service.Status)
+
+	log.ErrLog(err)
+
+	service.PTPipe = pipe
+
+	return err
 }
 
 func (service *Service) Run() error {
@@ -199,31 +213,120 @@ func MkService(name, command, user string, active bool, at int) *Service {
 
 	service.makeprocess()
 
-	service.Status.Stdout = service.Pipe.Stdout.w
-	service.Status.Stdin = service.Pipe.Stdin.r
-	service.Status.Stderr = service.Pipe.Stderr.w
+	// service.Status.Stdout = service.Pipe.Stdout.w
+	// service.Status.Stdin = service.Pipe.Stdin.r
+	// service.Status.Stderr = service.Pipe.Stderr.w
 
 	return service
 }
 
 type TTY struct {
 	Path string
+	File *os.File
+	O *term.State
 }
 
-func RedStdPIPE() {
-	
-}
-
-func read(file string) (string, error) {
+/* func read(file string) (string, error) {
 	rb, err := os.ReadFile(file)
 
 	srb := string(rb)
 
 	return srb, err
+} */
+
+func asyncStdinPipe(pipe *os.File, tty *TTY) {
+	_, err := io.Copy(pipe, tty.File)
+
+	log.Log(false, "Finished!!")
+
+	log.ErrLog(err)
 }
 
-func (service *Service) Attach(tty TTY) error {
+func asyncStdoutPipe(pipe *os.File, tty *TTY) {
+	_, err := io.Copy(tty.File, pipe)
+
+	log.ErrLog(err)
+}
+
+func asyncStderrPipe(pipe *os.File, tty *TTY) {
+	_, err := io.Copy(tty.File, pipe)
+
+	log.ErrLog(err)
+}
+
+func (service *Service) Attach(tty *TTY) error {
+	if service.PTPipe == nil {
+		return errors.New("cannot attach to a tty a process not started")
+	}
+
+	o, err := term.MakeRaw(int(tty.File.Fd()))
+
+	tty.O = o
+
+	if err != nil {
+		return err
+	}
+
+	go asyncStdinPipe(service.PTPipe, tty)
+	go asyncStdoutPipe(service.PTPipe, tty)
+	// go asyncStderrPipe(service.PTPipe, tty)
+
+	log.LogTime(false, "Attaching " + service.Name + " ", []any{})
+
 	return nil
+}
+
+func (service *Service) Detach(tty *TTY) error {
+	err := term.Restore(int(tty.File.Fd()), tty.O)
+
+	return err
+}
+
+type ENVVAR struct {
+	Key string
+	Value string
+}
+
+func GetEnv(unixuser *user.User) ([]ENVVAR, error) {
+	command := exec.Command("env", "-i", "bash", "--login", "-c", "env")
+
+	command.SysProcAttr = &syscall.SysProcAttr{}
+
+	command.SysProcAttr.Credential = &syscall.Credential{
+		Uid: func() uint32 {
+			v, _ := strconv.Atoi(unixuser.Uid)
+			return uint32(v)
+		}(),
+		Gid: func() uint32 {
+			v, _ := strconv.Atoi(unixuser.Gid)
+			return uint32(v)
+		}(),
+		Groups: func() []uint32 {
+			v, _ := strconv.Atoi(unixuser.Gid)
+			return []uint32{uint32(v)}
+		}(),
+	}
+
+	commout, err := command.Output()
+
+	commoutstr := string(commout)
+
+	lcs := strings.Split(commoutstr, "\n")
+
+	var result []ENVVAR = []ENVVAR{}
+
+	for n, h := range lcs {
+		if strings.Contains(h, "=") && !strings.Contains(h, "tty") {
+			k := strings.Split(h, "=")
+
+			result[n] = ENVVAR{
+				k[0],
+				k[1],
+			}
+		}
+	}
+
+	return result, err
 }
 
 func MkServicePipe() {
@@ -247,5 +350,6 @@ type Service struct {
 	Active bool
 	User *user.User
 	Pipe *StdPIPE
+	PTPipe *os.File
 	At int
 }
